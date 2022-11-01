@@ -61,12 +61,13 @@ class RetinaDatasets(Dataset):
                                                        mode=torchvision.io.ImageReadMode.RGB)).float() / 255.0
                 label = resize(torchvision.io.read_image(label,
                                                          mode=torchvision.io.ImageReadMode.GRAY)).float() / 255.0
+                label = label.long().squeeze(0)
                 for i in range(8):
                     height = 64 * i
                     for j in range(8):
                         width = 64 * j
                         self.images.append(img[:, width: width + 64, height: height + 64])
-                        self.labels.append(label[:, width: width + 64, height: height + 64])
+                        self.labels.append(label[width: width + 64, height: height + 64])
         print('Finished Processing...')
 
     def __len__(self):
@@ -80,7 +81,7 @@ def load_datasets(path):
     return RetinaDatasets(path)
 
 
-def load_dataloader(path, num_workers=16, batch_size=128):
+def load_dataloader(path, num_workers=16, batch_size=256):
     return DataLoader(dataset=load_datasets(path), shuffle=True,
                       batch_size=batch_size, num_workers=num_workers)
 

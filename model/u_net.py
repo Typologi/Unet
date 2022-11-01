@@ -5,7 +5,7 @@ from .utils import init_weights, count_param
 
 
 class UNet(nn.Module):
-    def __init__(self, in_channels=3, n_classes=1, feature_scale=2, is_deconv=True, is_batchnorm=True):
+    def __init__(self, in_channels=3, n_classes=2, feature_scale=2, is_deconv=True, is_batchnorm=True):
         super(UNet, self).__init__()
         self.in_channels = in_channels
         self.feature_scale = feature_scale
@@ -59,12 +59,11 @@ class UNet(nn.Module):
         up2 = self.up_concat2(up3, conv2)  # 32*256*256
         up1 = self.up_concat1(up2, conv1)  # 16*512*512
 
-        final = self.final(up1)
-        return self.sigmoid(final)
+        return self.final(up1)
 
 
 class UNet_Nested(nn.Module):
-    def __init__(self, in_channels=3, n_classes=1, feature_scale=2, is_deconv=True, is_batchnorm=True, is_ds=True):
+    def __init__(self, in_channels=3, n_classes=2, feature_scale=2, is_deconv=True, is_batchnorm=True, is_ds=True):
         super(UNet_Nested, self).__init__()
         self.in_channels = in_channels
         self.feature_scale = feature_scale
@@ -150,9 +149,9 @@ class UNet_Nested(nn.Module):
         final = (final_1 + final_2 + final_3 + final_4) / 4
 
         if self.is_ds:
-            return self.sigmoid(final)
+            return final
         else:
-            return self.sigmoid(final_4)
+            return final_4
 
 
 def test_u_net():
