@@ -81,8 +81,8 @@ def load_datasets(path):
     return RetinaDatasets(path)
 
 
-def load_dataloader(path, num_workers=16, batch_size=256):
-    return DataLoader(dataset=load_datasets(path), shuffle=True,
+def load_dataloader(path, num_workers=16, batch_size=256, shuffle=True):
+    return DataLoader(dataset=load_datasets(path), shuffle=shuffle,
                       batch_size=batch_size, num_workers=num_workers)
 
 

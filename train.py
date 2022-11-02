@@ -10,21 +10,20 @@ from matplotlib import pyplot as plt
 
 def main():
     training = load_dataloader('./datasets/datasets.txt', batch_size=256)
-    test = load_dataloader('./datasets/testsets.txt')
     net = UNet_Nested()
     if torch.cuda.is_available():
         net.cuda()
     torch.manual_seed(202221090109)
-    optimizer = optim.Adam(net.parameters(), lr=0.001)
-    # if os.path.exists('./data.pth'):
-    #     model_, optimizer_ = torch.load('./data.pth')
-    #     net.load_state_dict(model_)
-    #     optimizer.load_state_dict(optimizer_)
+    optimizer = optim.Adam(net.parameters(), lr=0.01)
+    if os.path.exists('./data-21.pth'):
+        model_, optimizer_ = torch.load('./data-21.pth')
+        net.load_state_dict(model_)
+        optimizer.load_state_dict(optimizer_)
     criterion = nn.CrossEntropyLoss()
     dice = GeneralizedSoftDiceLoss()
 
     running_loss = 0.0
-    for epoch in range(20):
+    for epoch in range(40):
         for i, data in enumerate(training, 0):
             inputs, labels = data
             if torch.cuda.is_available():
@@ -40,10 +39,12 @@ def main():
             if i % 50 == 49:
                 print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss}')
                 running_loss = 0.0
-                plt.imshow(outputs[0].permute(1, 2, 0)[:, :, 0].cpu().detach().numpy())
+                img_1 = outputs[0].permute(1, 2, 0)
+                img_1 = img_1.cpu().detach().numpy()
+                plt.imshow(img_1[:, :, 0])
                 plt.title('Pre 0')
                 plt.show()
-                plt.imshow(outputs[0].permute(1, 2, 0)[:, :, 1].cpu().detach().numpy())
+                plt.imshow(img_1[:, :, 1])
                 plt.title('Pre 1')
                 plt.show()
                 plt.imshow(labels[0].cpu().detach().numpy())
@@ -54,7 +55,7 @@ def main():
     torch.save((
         net.state_dict(),
         optimizer.state_dict()
-    ), './data-3.pth')
+    ), './data-21.pth')
     print('Finished')
 
 
